@@ -1,0 +1,57 @@
+function approx = newTonsMethod( SatInfo,n,guess)
+
+
+    disp('Your initial guess is');
+    guess
+    
+    C = 299792.458;
+    % ** Documantation of method below **
+    
+    %we, here are going to solve the nonlinear system through the use of
+    %newtons method, which as in LS method requires linearization we begin
+    %by considering the ireative equation 
+    % Vn+1 = Vn - inverse([F'(Vn)])*F(Vn)
+    % F'(Vn) -> is the Jacobian matrix
+    % note that the nonlin system must infact be linearized as we have seen
+    % in the LS method
+    % linearization entails the use of the taylor expansion in 3d 
+    % say f(V1+H1,V2+H2,V3+H3) = f(V1,V2,V3)+ (df(V1,V2,V3)/dV1)H1 + (df(V1,V2,V3)/dV2)H2
+    % + (df(V1,V2,V3)/dV3)H3
+    % => where Hi is added to Vi as our step size
+    % => F(V + H) = F(V) + F'(V)*H, H = [H1 H2 H3]
+    % => solve now for H = -[F'(V)]^(-1) * F(V)
+    % => V1 = V + H 
+    % above Hi are the steps that yield cnvergence to the solution
+    % we consider 
+ %(x - a_{1})^{2} + (y - b_{1})^{2} + (z - c_{i})^{2} - [( C*(t_{1}-D))]= 0
+ %(x - a_{2})^{2} + (y - b_{2})^{2} + (z - c_{i})^{2} - [( C*(t_{2}-D))]= 0
+ %(x - a_{3})^{2} + (y - b_{3})^{2} + (z - c_{i})^{3} - [( C*(t_{3}-D))]= 0
+ %(x - a_{4})^{2} + (y - b_{4})^{2} + (z - c_{i})^{2} - [( C*(t_{4}-D))]= 0
+ %with of course the proper values substituted, these are found in SatInfo
+ %matrix
+
+    approxSeq = [];
+    Xk = guess;
+    F = [];
+    J = [];
+    for i = 1:n
+        
+        for j=1 : 4
+           F(j) = newtFunc(SatInfo(j,1),SatInfo(j,2),SatInfo(j,3),C,SatInfo(j,4),Xk(1),Xk(2),Xk(3),Xk(4));
+           J(j,1:4) = [ 2*(Xk(1)- SatInfo(j,1)) 2*(Xk(2)- SatInfo(j,2)) 2*(Xk(3)- SatInfo(j,3)) 2*C^2*(SatInfo(j,4) - Xk(4)) ];
+        end
+        %we now solve for H and add it to Xk so that it may start to
+        %converge = > H = -[F'(X0)]^(-1) * F(X0)
+        H = J\-F';
+   
+        Xk = Xk + H';
+        [m,n] = size(approxSeq);
+        approxSeq(m+1,1:4) = Xk;
+        
+    end
+    
+    approx = approxSeq;
+    
+
+end
+
