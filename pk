@@ -1,0 +1,6 @@
+function w = pk( X,Y,Z,Xk,Yk,Zk)
+    
+    w = sqrt(((Xk-X)^2)+((Yk-Y)^2)+((Zk-Z)^2));
+
+end
+
