@@ -1,0 +1,38 @@
+% satellite info vectors [Pseudo Range, x-location, y-location, z-location,
+% Toposphere Err, Ionosphere Err, Satellites time offset = 0 approximately, available in satellites broadcast data]
+
+
+ST1 = [24310764.064 14832308.660 -20466715.890 -7428634.750 0 0 0 0];
+ST2 = [22914600.784 -15799854.050 -13301129.170 17133838.240 0 0 0 0];
+ST3 = [20628809.405 1984818.910 -11867672.960 23716920.130 0 0 0 0];
+ST4 = [23422377.972 -12480273.190 -23382560.530 3278472.680 0 0 0 0];
+
+SatInfo = [ ST1; ST2; ST3; ST4 ];
+
+% Error bias is disregarded given that the technique being used here is
+% diffrent
+
+%initial guessed used to start the convergent series, in some methods like
+%the squares, which makes use of a parabolic pattern the guess matters, but
+%not in the LS method
+initialGuess = [0 0 0 0];
+n = 50;
+%LS method is applied
+approxLS = nonLinSolver4(initialGuess, 50, SatInfo)
+%Acceptable solution
+acceptRP = [ 1111590.460 -4348258.631 4527351.820 ]
+%ERROR between accapetable solution, and the LS approximation
+err = abs(approxLS(n,1:3)-acceptRP)
+
+% we now graph the data
+%Graph sattelites positions
+[m,n] = size(SatInfo);
+[u,v] = size(approxLS);
+for i = 1:m
+   scatter3(SatInfo(i,2),SatInfo(i,3),SatInfo(i,4),50,'r');hold on
+end
+scatter3(acceptRP(1), acceptRP(2), acceptRP(3), 50, 'o', 'b');
+for j=1:u
+      scatter3(approxLS(j,1),approxLS(j,2),approxLS(j,3),50,'g');hold on
+end
+
