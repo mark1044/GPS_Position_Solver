@@ -1,0 +1,51 @@
+function approx = nonLinSolver4(irp, n, SatInfo )
+
+
+%speed of light constant
+C = 299792.458;
+%corresponding satellite inputs have all corresponding arguments required
+
+
+%sequence of approximations
+solSeq = [];
+
+for i = 1: n
+
+   
+    A = [];
+    b = [];
+  
+    %linearize, we here gain 4 linear sytems taht are then stacked to
+    %create an Ax=b linear system, thereby linearizing a non linear system
+    
+    %DONT FOR GET UPDATE INITIAL RECIEVER POSITION AFTER SOLVING LS PROBLEM
+
+    for j = 1:4
+    
+        pki = pk(irp(1),irp(2),irp(3),SatInfo(j,2),SatInfo(j,3),SatInfo(j,4));
+        A(j,1:4) = [ -((SatInfo(j,2) - irp(1))/pki)  -((SatInfo(j,3) - irp(2))/pki)  -((SatInfo(j,4) - irp(3))/pki) 1 ];
+        b(j) = SatInfo(j,1) - pki + (C*SatInfo(j,8)) - SatInfo(j,5) - SatInfo(j,6) - SatInfo(j,7);
+     
+        
+    end
+    %we now have the linearized system which we must apply LS method on
+    %to solve the LS method we apply QR factorization, for specific reasons
+    %see report or presentation, i employ matlabs algorithm to do so
+ 
+    %LS problem is solved automatically by MATLAB
+    xors = A\b';
+    for o = 1:4
+       irp(o)  = irp(o) + xors(o);
+    end
+    
+    [m,n] = size(solSeq);
+  
+    solSeq(m+1,1:4) = irp;
+   
+end
+
+
+approx = solSeq;
+
+
+end
