@@ -1,0 +1,8 @@
+function y = newtFunc( Xk, Yk, Zk, C, t1, X, Y, Z, d )
+%NEWTFUNC Summary of this function goes here
+%   Detailed explanation goes here
+    y = (Xk-X)^2 + (Yk - Y)^2 + (Zk - Z)^2 - (C * (t1 - d))^2;
+    
+
+end
+
